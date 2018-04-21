@@ -223,7 +223,7 @@ public:
 	};
 
 	void OnlyClearCInternalNode(){
-		for (int i = 0; i < MAXNUM_KEY; i++)
+		for (int i = 0; i < m_Count; i++)
 		{
 			delete m_Keys[i];
 		}

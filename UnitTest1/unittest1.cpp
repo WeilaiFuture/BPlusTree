@@ -16,7 +16,7 @@ private:
 public:
 	IntRandNum(int numCout){
 		num = (int *)malloc(sizeof(int)*numCout);
-		//srand((unsigned)time(NULL));
+		srand((unsigned)time(NULL));
 		for (int i = 0; i < numCout; i++){
 			num[i] = i + 1;
 		}
@@ -30,7 +30,7 @@ public:
 	}
 	IntRandNum(){
 		num = (int *)malloc(sizeof(int) * 1000);
-		//srand((unsigned)time(NULL));
+		srand((unsigned)time(NULL));
 		for (int i = 0; i < 1000; i++){
 			num[i] = i + 1;
 		}
@@ -58,7 +58,7 @@ private:
 public:
 	vector<string> strArray;
 	StringRandNum(int numCout){
-		//srand((unsigned)time(NULL));
+		srand((unsigned)time(NULL));
 		for (int i = 0; i < numCout; i++){
 			string str;
 			bool flag = true;
@@ -78,7 +78,7 @@ public:
 		}
 	}
 	StringRandNum(){
-		//srand((unsigned)time(NULL));
+		srand((unsigned)time(NULL));
 		for (int i = 0; i < 1000; i++){
 			string str;
 			bool flag = true;
@@ -120,15 +120,6 @@ namespace unittest
 			Assert::IsTrue((node->GetType()) == NODE_TYPE_LEAF && (node->GetCount()) == 0 && (node->GetFather()) == NULL);
 			delete node;
 		}
-		/*TEST_METHOD(内部节点设置获取element)
-		{
-			CInternalNode<int> * cInternalNode = new CInternalNode<int>();
-			cInternalNode->SetElement(1, 100);
-			cInternalNode->SetElement(2, 101);
-			Assert::IsTrue(cInternalNode->GetElement(1) == 100 && cInternalNode->GetElement(2) == 101 && cInternalNode->GetElement(3) == NULL&&cInternalNode->GetElement(MAXNUM_KEY + 1) == NULL);
-			//测试一节点和二节点是否可以正常存取，同时测试空节点及溢出节点的获取
-			delete cInternalNode;
-		}*/
 		TEST_METHOD(内部节点设置获取指针测试)
 		{
 			CInternalNode<int> * cInternalNode = new CInternalNode<int>();
@@ -138,52 +129,6 @@ namespace unittest
 				cInternalNode->GetPointer(MAXNUM_KEY + 1) == NULL);
 			delete cInternalNode;
 		}
-		/*TEST_METHOD(内部节点插入删除操作)//order为2
-		{
-			CInternalNode<int> * cInternalNode = new CInternalNode<int>();
-			CInternalNode<int> * insertNode = new CInternalNode<int>();
-			for (int i = 1, j = 1, z = 1; i < MAXNUM_KEY; i++, j++, z++){
-				if (i == MAXNUM_KEY / 2)
-					j++;
-				if (i == MAXNUM_KEY / 2 + 1)
-					z++;
-				cInternalNode->SetElement(i, j);
-				cInternalNode->SetPointer(i, cInternalNode + z);//这些指针是不能访问的，这里只做测试使用
-				cInternalNode->InsertAddCount();
-			}//通过这种方式，使内部节点变为 值1 3 4|指针1 2 4 5 然后插入 值2|指针3的节点 则内部节点最终变为 1234|12345
-			cInternalNode->SetPointer(MAXNUM_KEY, cInternalNode + MAXNUM_KEY + 1);
-			Assert::IsTrue(cInternalNode->GetElement(1) == 1 && cInternalNode->GetPointer(1) == cInternalNode + 1 &&
-				cInternalNode->GetCount() == 3);
-			cInternalNode->Insert(MAXNUM_KEY / 2, cInternalNode + MAXNUM_KEY / 2 + 1);
-			int test = cInternalNode->GetPointer(2) - cInternalNode->GetPointer(1);
-			for (int i = 2; i <= MAXNUM_KEY; i++){
-				Assert::IsTrue(cInternalNode->GetElement(i) - cInternalNode->GetElement(i - 1) == 1
-					&& (CInternalNode<int> *)cInternalNode->GetPointer(i) - (CInternalNode<int> *)cInternalNode->GetPointer(i - 1) == 1);
-			}
-			Assert::IsFalse(cInternalNode->Insert(MAXNUM_KEY + 1, cInternalNode + MAXNUM_KEY + 2));
-			cInternalNode->Delete(1);
-			Assert::IsTrue(cInternalNode->GetCount() == 3 && cInternalNode->GetElement(1) == 2);
-			delete cInternalNode;
-		}*/
-		/*TEST_METHOD(内部节点分裂节点操作)//该分裂过程只把节点对半分裂，并不插入节点
-		{
-			CInternalNode<int> * cInternalNode = new CInternalNode<int>();
-			CInternalNode<int> * brotherNode = new CInternalNode<int>();
-			for (int i = 1; i <= MAXNUM_KEY; i++){
-				cInternalNode->SetElement(i, 2 * i);
-				cInternalNode->SetPointer(i, cInternalNode + i);//这些指针是不能访问的，这里只做测试使用
-				cInternalNode->InsertAddCount();
-			}//通过这种方式，使内部节点变为 key值 2468| 指针 12345
-			cInternalNode->SetPointer(MAXNUM_KEY + 1, cInternalNode + MAXNUM_KEY + 1);
-
-			int key = cInternalNode->Split(brotherNode, 1);
-			Assert::IsTrue(cInternalNode->GetCount() == 1 && brotherNode->GetCount() == 2
-				&& cInternalNode->GetElement(1) == 2 && brotherNode->GetElement(1) == 6);
-			delete cInternalNode;
-		}*/
-
-
-
 
 
 
