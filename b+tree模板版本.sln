@@ -1,0 +1,28 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2013
+VisualStudioVersion = 12.0.40629.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "b+tree模板版本", "b+tree模板版本\b+tree模板版本.vcxproj", "{AF820FEE-A773-431F-9EB2-3D246BE02C59}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "UnitTest1", "UnitTest1\UnitTest1.vcxproj", "{92F87906-B2BB-4813-B7C9-212592195408}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AF820FEE-A773-431F-9EB2-3D246BE02C59}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AF820FEE-A773-431F-9EB2-3D246BE02C59}.Debug|Win32.Build.0 = Debug|Win32
+		{AF820FEE-A773-431F-9EB2-3D246BE02C59}.Release|Win32.ActiveCfg = Release|Win32
+		{AF820FEE-A773-431F-9EB2-3D246BE02C59}.Release|Win32.Build.0 = Release|Win32
+		{92F87906-B2BB-4813-B7C9-212592195408}.Debug|Win32.ActiveCfg = Debug|Win32
+		{92F87906-B2BB-4813-B7C9-212592195408}.Debug|Win32.Build.0 = Debug|Win32
+		{92F87906-B2BB-4813-B7C9-212592195408}.Release|Win32.ActiveCfg = Release|Win32
+		{92F87906-B2BB-4813-B7C9-212592195408}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
