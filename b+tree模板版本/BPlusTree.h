@@ -691,9 +691,25 @@ protected:
 
 };
 
+class BPlusTreeBase {
+public:
+	virtual bool KeyToValueBase(void* data, int &offset) = 0;
+	// 插入指定的数据
+	virtual bool InsertBase(void* data, int offset) = 0;
+	// 删除指定的数据
+	virtual bool DeleteBase(void* data) = 0;
+	
+	virtual int RecordsInRangeBase(void* min, void* max) = 0;
+
+	virtual bool CheckTree() = 0;
+
+	virtual int GetOffsetFromPos(int pos) = 0;
+
+};
+
 /* B+树数据结构 */
 template<typename  KEY_TYPE>
-class BPlusTree
+class BPlusTree:public BPlusTreeBase
 {
 public:
   
@@ -708,44 +724,19 @@ public:
 		ClearTree();
 	};
 
-    // 查找指定的数据的路径
-	bool Search(KEY_TYPE data, char* sPath){
-		int offset = 0;
-		int pos = 0;
-		CNode<KEY_TYPE> * pNode = GetRoot();
-		// 循环查找对应的叶子结点
-		while (NULL != pNode)
-		{
-			// 结点为叶子结点，循环结束
-			if (pNode->GetType() == NODE_TYPE_LEAF)
-			{
-				break;
-			}
+	bool KeyToValueBase(void* data, int &offset) {
+		return KeyToValue(*((KEY_TYPE*)data), offset);
+	}
+	bool InsertBase(void* data, int offset) {
+		return Insert(*((KEY_TYPE*)data), offset);
+	}
+	int RecordsInRangeBase(void* min, void* max) {
+		return RecordsInRange(*((KEY_TYPE*)min), *((KEY_TYPE*)max));
+	}
+	bool DeleteBase(void* data) {
+		return Delete(*((KEY_TYPE*)data));
+	}
 
-			// 找到第一个键值大于等于key的位置
-			for (pos = 1; (pos <= pNode->GetCount()) && (data >= pNode->GetElement(pos)); pos++)
-			{
-			}
-			pNode = pNode->GetPointer(pos);
-		}
-
-		// 没找到
-		if (NULL == pNode)
-		{
-			return false;
-		}
-		// 在叶子结点中继续找
-		bool found = false;
-		for (int i = 1; (i <= pNode->GetCount()); i++)
-		{
-			if (data == pNode->GetElement(i))
-			{
-				found = true;
-			}
-		}
-
-		return found;
-	};
 	//查找叶子节点与key对应的值offset
 	bool KeyToValue(KEY_TYPE data, int &offset){
 		int i = 0;
@@ -790,7 +781,7 @@ public:
     // 插入指定的数据
 	bool Insert(KEY_TYPE data, int offset){
 		// 检查是否重复插入
-		bool found = Search(data, NULL);
+		bool found = Search(data);
 		if (true == found)
 		{
 			return false;
@@ -1044,7 +1035,6 @@ public:
 		else
 			return false;
 	};
-
     // 清除树
 	void ClearTree(){
 		CNode<KEY_TYPE>* pNode = GetRoot();
@@ -1057,7 +1047,6 @@ public:
 		m_pLeafTail = NULL;
 		SetRoot(NULL);
 	};
-
     // 打印树
 	void PrintTree(){
 		CNode<KEY_TYPE>* pRoot = GetRoot();
@@ -1116,7 +1105,6 @@ public:
 		}
 	};
 
-
     // 检查树是否满足B+树的定义
 	bool CheckTree(){
 		CLeafNode<KEY_TYPE> * pThisNode = m_pLeafHead;
@@ -1147,6 +1135,73 @@ public:
 			return CheckNode(GetRoot());
 	};
 
+	int RecordsInRange(KEY_TYPE min, KEY_TYPE max) {
+		int MinPos = 0, MaxPos = 0, Count = 0;
+		CLeafNode<KEY_TYPE>* minNode = GetCleafNodeFromKey(min, MinPos);
+		CLeafNode<KEY_TYPE>* maxNode = GetCleafNodeFromKey(max, MaxPos);
+		Count += minNode->GetCount() - MinPos;
+		while (minNode->m_pNextNode != maxNode) {
+			minNode = minNode->m_pNextNode;
+			Count += minNode->GetCount();
+		}
+		Count += MaxPos;//左开右闭空间
+		return Count;
+	}
+
+	//获取记录数量
+	int getLeafCount() {
+		return leafCount;
+	}
+	//从排序位置获取值
+	int GetOffsetFromPos(int pos)
+	{
+		CLeafNode<KEY_TYPE> *node = m_pLeafHead;
+		while (pos > node->GetCount()) {
+			pos = pos - node->GetCount();
+			node = node->m_pNextNode;
+		}
+		return node->GetElementOffset(pos);
+	}
+private:
+	// 查找指定的数据的路径
+	bool Search(KEY_TYPE data) {
+		int offset = 0;
+		int pos = 0;
+		CNode<KEY_TYPE> * pNode = GetRoot();
+		// 循环查找对应的叶子结点
+		while (NULL != pNode)
+		{
+			// 结点为叶子结点，循环结束
+			if (pNode->GetType() == NODE_TYPE_LEAF)
+			{
+				break;
+			}
+
+			// 找到第一个键值大于等于key的位置
+			for (pos = 1; (pos <= pNode->GetCount()) && (data >= pNode->GetElement(pos)); pos++)
+			{
+			}
+			pNode = pNode->GetPointer(pos);
+		}
+
+		// 没找到
+		if (NULL == pNode)
+		{
+			return false;
+		}
+		// 在叶子结点中继续找
+		bool found = false;
+		for (int i = 1; (i <= pNode->GetCount()); i++)
+		{
+			if (data == pNode->GetElement(i))
+			{
+				found = true;
+			}
+		}
+
+		return found;
+	};
+	//打印节点
 	void PrintNode(CNode<KEY_TYPE>* pNode){
 		if (NULL == pNode)
 		{
@@ -1255,34 +1310,22 @@ public:
     {
         m_Root = root;
     }
-
-	int getOffsetFromPos(int pos)
-	{
-		CLeafNode<KEY_TYPE> *node = m_pLeafHead;
-		while (pos > node->GetCount()){
-			pos = pos - node->GetCount();
-			node = node->m_pNextNode;
-		}
-		return node->GetElementOffset(pos);
-	}
-
-    // 获取和设置深度
+	
+    // 获取深度
     int GetDepth()
     {
         return m_Depth;
     }
-
+	//设置深度
     void SetDepth(int depth)
     {
         m_Depth = depth;
     }
-   
     // 深度加一
     void IncDepth()
     {
         m_Depth = m_Depth + 1;
     }
-
     // 深度减一
     void DecDepth()
     {
@@ -1291,36 +1334,22 @@ public:
             m_Depth = m_Depth - 1;
         }
     }
-
+	//记录++
 	void IncLeafCount(){
 		leafCount++;
 	}
-
+	//记录--
 	void DecLeafCount(){
 		if (leafCount>0)
 			leafCount--;
 	}
-
+	//记录清空
 	void clearLeafCount(){
 		leafCount = 0;
 	}
+	
 
-	int getLeafCount(){
-		return leafCount;
-	}
-
-	int records_in_range(KEY_TYPE min, KEY_TYPE max){
-		int MinPos = 0, MaxPos = 0, Count = 0;
-		CLeafNode<KEY_TYPE>* minNode = GetCleafNodeFromKey(min, MinPos);
-		CLeafNode<KEY_TYPE>* maxNode = GetCleafNodeFromKey(max, MaxPos);
-		Count += minNode->GetCount() - MinPos;
-		while (minNode->m_pNextNode != maxNode){
-			minNode = minNode->m_pNextNode;
-			Count += minNode->GetCount();
-		}
-		Count += MaxPos;//左开右闭空间
-		return Count;
-	}
+	
 
 
 public:

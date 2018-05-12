@@ -60,16 +60,6 @@ void intTest1(BPlusTree<int>* pTree, int count)
 	printf("successed!\n");
 }
 
-// 在树中查找某数据
-void intTest2(BPlusTree<int>* pTree, int data)
-{
-	char sPath[255] = { 0, };
-
-	(void)pTree->Search(data, sPath);
-	int a = 0;
-	pTree->KeyToValue(data, a);
-	printf("\n%s\n%d\n", sPath, a);
-}
 
 // 在树中插入某数据
 void intTest3(BPlusTree<int>* pTree, int data, int offset)
@@ -166,12 +156,6 @@ int main(int argc, char* argv[])
 			printf("请输入数据个数(10-150)：");
 			scanf("%d", &y);
 			intTest1(pTree, y);
-			break;
-
-		case 2:
-			printf("请输入要查找的数值：");
-			scanf("%d", &y);
-			intTest2(pTree, y);
 			break;
 
 		case 3:
